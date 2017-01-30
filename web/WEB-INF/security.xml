@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/security"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+ 
+    
+    
+    
+  
+    <http use-expressions="true" >
+        <intercept-url pattern="/index.js" access="permitAll" />        
+        <intercept-url pattern="/desktop/**" access="permitAll" />
+        <intercept-url pattern="/ext/**" access="permitAll" />
+        <intercept-url pattern="/ext4/**" access="permitAll" />      
+        <intercept-url pattern="/login*" access="permitAll" />        
+        <intercept-url pattern="/index.htm" access="permitAll" />
+    
+        <intercept-url pattern="/findAllServer.htm" access="permitAll" />
+        <intercept-url pattern="/findAllServerTree.htm" access="permitAll" />
+        <intercept-url pattern="/findAllTaskbyServer.htm" access="permitAll" />
+        <intercept-url pattern="/testConexion.htm" access="permitAll" />
+        <intercept-url pattern="/addServer.htm" access="permitAll" />  
+        <intercept-url pattern="/getServerInformation.htm" access="permitAll" />  
+        <intercept-url pattern="/removeServer.htm" access="permitAll" />  
+        <intercept-url pattern="/updateServer.htm" access="permitAll" />  
+        
+        
+        <intercept-url pattern="/listarBD.htm" access="permitAll" />
+        <intercept-url pattern="/findAllTask1.htm" access="permitAll" />
+        <intercept-url pattern="/addTask.htm" access="permitAll" />
+        <intercept-url pattern="/updateTask.htm" access="permitAll" />
+        <intercept-url pattern="/removeTask.htm" access="permitAll" />  
+        
+        <intercept-url pattern="/addUsuario.htm" access="hasAnyRole('Administrador')" />
+        <intercept-url pattern="/removeUsuario.htm" access="hasAnyRole('Administrador')" />
+        <intercept-url pattern="/findAllUsuario.htm" access="permitAll" />  
+        <intercept-url pattern="/updateUsuario.htm" access="hasAnyRole('Administrador')" />  
+            
+       
+        <intercept-url pattern="/principal.htm" access="isAuthenticated()" />
+        <!--intercept-url pattern="/**" access="denyAll" /-->
+ 
+        <form-login login-page='/login.htm'
+                    authentication-failure-url="/login.htm?error=true"
+                    username-parameter="username"
+                    password-parameter="password"
+                    authentication-success-handler-ref="myAuthenticationSuccessHandler"/>
+ 
+        <logout/>
+    </http>
+ 
+    <beans:bean id="myAuthenticationSuccessHandler"
+                class="monitoreoApp.controller.mySimpleUrlAuthenticationSuccessHandler" />
+ 
+    <!-- este manera es los ususarios fijos en xml-->
+    <!--authentication-manager>
+        <authentication-provider>
+            <user-service>
+                <user name="rolando" password="123456" authorities="ROLE_USER" />
+                <user name="admin1" password="admin1Pass" authorities="ROLE_ADMIN" />
+            </user-service>
+        </authentication-provider>
+    </authentication-manager-->
+    
+    <authentication-manager>
+        <authentication-provider>
+            <jdbc-user-service data-source-ref="dataSource"
+                               users-by-username-query=
+		    "select usser,pass, enabled from usuario where usser=?"
+                               authorities-by-username-query=
+		    "select usser, rol from usuario where usser =?  " />
+        </authentication-provider>
+    </authentication-manager>
+    
+    <!--creando el datourse aqui mismo-->
+    <beans:bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+        <beans:property name="driverClassName" value="org.postgresql.Driver" />
+        <beans:property name="url" value="jdbc:postgresql://localhost:5432/monitoreo" />
+        <beans:property name="username" value="postgres" />
+        <beans:property name="password" value="1" />
+    </beans:bean>
+ 
+</beans:beans>
